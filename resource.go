@@ -57,7 +57,7 @@ func Create(d *schema.ResourceData, meta interface{}) error {
 	output, json_output := run_cmd(command)
 	d.Set("text_output", output)
 	d.Set("json_output", json_output)
-	d.SetId(hash(output))
+	d.SetId(hash(command+output))
 	return nil
 }
 
@@ -69,7 +69,7 @@ func Delete(d *schema.ResourceData, meta interface{}) error {
 func Exists(d *schema.ResourceData, meta interface{}) (bool, error) {
 	command := d.Get("command").(string)
 	output, _ := run_cmd(command)
-	return hash(output) == d.Id(), nil
+	return hash(command+output) == d.Id(), nil
 }
 
 func Read(d *schema.ResourceData, meta interface{}) error {
@@ -88,9 +88,9 @@ func run_cmd(s string) (string, map[string]interface{}) {
 	ss := safeSplit(s)
 	cmdName := ss[0]
 	cmdArgs := ss[1:]
-	cmdOut, err := exec.Command(cmdName, cmdArgs...).Output()
+	cmdOut, err := exec.Command(cmdName, cmdArgs...).CombinedOutput()
 	if err != nil {
-		log.Println(err)
+		log.Fatalf("Command `%v` failed with `%v`\n", s, err)
 		return "", nil
 	}
 	// attempt json decode
