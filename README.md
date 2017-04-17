@@ -1,5 +1,8 @@
 # terraform-provider-simplescript
 
+**DEPRECATED**: wrote this long ago before terraform had `data` primitives. 
+Take a look at <https://www.terraform.io/docs/providers/external/index.html> to do this correctly.
+
 Terraform plugin for providing values via script.
 
 Here's an example terraform:
